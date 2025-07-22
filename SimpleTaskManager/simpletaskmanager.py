@@ -1,15 +1,21 @@
 import time
 
 tasks = []
+import time
 
-def add_task(task_name):
+tasks = []
+
+
+def add_task(task_name, serial_no):
     task = {
+        'serial_no': serial_no,
         'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
         'task': task_name
     }
     tasks.append(task)
 
 user_input = input("Do you have any active tasks? (yes/no): ")
+
 if user_input.lower() in ['yes', 'y']:
     while True:
         try:
@@ -22,14 +28,17 @@ if user_input.lower() in ['yes', 'y']:
             print("Invalid input. Please enter a valid number.")
 
     for i in range(numberOfInputs):
-        task_name = input(f"Enter task ->{i+1} name: ")
-        add_task(task_name)
+        task_name = input(f"Enter task #{i+1} name: ")
+        serial_no = i + 1
+        add_task(task_name, serial_no)
 else:
     print("No tasks added. Thank you!")
 
-print("\nYour Tasks:")
-for t in tasks:
-    print(f"Time: {t['time']}  |  Task: {t['task']}")
+if tasks:
+    print("\nYour Tasks:")
+    for t in tasks:
+        print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
+
 
 
 def adding_features(tasks):
@@ -39,6 +48,33 @@ def adding_features(tasks):
         add_task(task_name)
         print(f"Congratulation your {noOftask+1} added")
 
+def removing_features(tasks):
+    if len(tasks) == 0:
+        print("No tasks to remove.")
+        return
+
+    print("\nYour Tasks:")
+    for t in tasks:
+        print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
+
+    while True:
+        try:
+            serial_no_input = int(input("Enter the Serial Number of the task you want to remove: "))
+            found = False
+            for i, task in enumerate(tasks):
+                if task['serial_no'] == serial_no_input:
+                    tasks.pop(i)
+                    print(f"Task #{serial_no_input} removed successfully.")
+                    found = True
+                    break
+            if not found:
+                print("Invalid Serial Number. Please try again.")
+            else:
+                break
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+print("\nYour Tasks:")
+            
 
 print("Operations are also available to performe")
 user_input2 = input("Would you like to perform any actions (Add, Edit, Delete, View)? Enter yes or no: ")
@@ -48,3 +84,8 @@ if user_input2.lower() in ['yes','y']:
     user_input3 = input("Enter the action you want to perform: ")
     if user_input3.lower() in ['add', 'a']:
         adding_features(tasks)
+    if user_input3.lower() in ['remove','delete','r','d']:
+        removing_features(tasks)
+print("Final tasks : ")
+for t in tasks:
+    print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
