@@ -96,6 +96,10 @@ def editing_features(tasks):
 
     print(f"No task found with Serial Number #{user_input}.")
 
+def view(task):
+    for t in tasks:
+        print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
+
 
 print("Operations are also available to performs")
 user_input2 = input("Would you like to perform any actions (Add, Edit, Delete, View)? Enter yes or no: ")
@@ -110,6 +114,10 @@ if user_input2.lower() in ['yes','y']:
 
     elif user_input3.lower() in ['edit','e']:
         editing_features(tasks)
+
+    elif user_input3.lower() in ['view','v']:
+        view(tasks)
+        
 print("Final tasks : ")
 for t in tasks:
     print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
