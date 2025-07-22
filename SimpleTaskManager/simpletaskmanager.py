@@ -74,9 +74,30 @@ def removing_features(tasks):
         except ValueError:
             print("Invalid input. Please enter a valid number.")
 print("\nYour Tasks:")
-            
 
-print("Operations are also available to performe")
+            
+def editing_features(tasks):
+    if not tasks:
+        print("No tasks available to edit.")
+        return
+
+    try:
+        user_input = int(input("Enter the Serial Number of the task you want to edit: "))
+    except ValueError:
+        print("Invalid input. Please enter a valid number.")
+        return
+
+    for task in tasks:
+        if task['serial_no'] == user_input:
+            new_task_name = input("Enter the updated task name: ")
+            task['task'] = new_task_name
+            print(f"Task #{user_input} updated successfully.")
+            return
+
+    print(f"No task found with Serial Number #{user_input}.")
+
+
+print("Operations are also available to performs")
 user_input2 = input("Would you like to perform any actions (Add, Edit, Delete, View)? Enter yes or no: ")
 
 if user_input2.lower() in ['yes','y']:
@@ -84,8 +105,11 @@ if user_input2.lower() in ['yes','y']:
     user_input3 = input("Enter the action you want to perform: ")
     if user_input3.lower() in ['add', 'a']:
         adding_features(tasks)
-    if user_input3.lower() in ['remove','delete','r','d']:
+    elif user_input3.lower() in ['remove','delete','r','d']:
         removing_features(tasks)
+
+    elif user_input3.lower() in ['edit','e']:
+        editing_features(tasks)
 print("Final tasks : ")
 for t in tasks:
     print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
