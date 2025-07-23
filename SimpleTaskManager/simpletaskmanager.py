@@ -143,11 +143,23 @@ llm=HuggingFaceEndpoint(
 model=ChatHuggingFace(llm=llm)
 
 
-template=ChatPromptTemplate.from_messages([
-    ('system', 'Based on time first you respect that user , You are a polite and helpful AI assistant. Organize the following tasks for the user based on urgency and deadline. Output them as a numbered list. only showing today tasks not much more content required to show there '),
-    ('human','tasks : {task}')
-    
+from langchain.prompts import ChatPromptTemplate
+
+template = ChatPromptTemplate.from_messages([
+    (
+        'system',
+        """You are a polite and helpful AI assistant that plans the user's day.
+Organize the following tasks **based on realism and natural daily flow**:
+- Morning tasks  should go first.
+- Long or fixed tasks (like classes) take priority.
+- Flexible or short tasks (like a date) should be placed logically — often in the evening.
+and format the output as a numbered list with duration.
+Avoid over-explaining."""
+    ),
+    ('human', 'Tasks:\n{task}')
 ])
+
+
 
 def organize_tasks_with_llm(task_string):
     prompt = template.format_messages(task=task_string)
