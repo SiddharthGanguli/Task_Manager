@@ -1,4 +1,10 @@
 import time
+from langchain_community.llms import Ollama
+from langchain.prompts import PromptTemplate,ChatPromptTemplate
+from langchain_core.messages import HumanMessage,AIMessage,SystemMessage
+from langchain_huggingface import ChatHuggingFace,HuggingFaceEndpoint
+from langchain.memory import ConversationSummaryMemory
+from langchain.chains import ConversationChain
 
 tasks = []
 import time
@@ -6,11 +12,14 @@ import time
 tasks = []
 
 
-def add_task(task_name, serial_no):
+def add_task(serial_no,user_name,task_name,duration,deadline):
     task = {
+        'name':user_name,
         'serial_no': serial_no,
         'time': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-        'task': task_name
+        'task': task_name,
+        'deadline':deadline,
+        'Duration':duration
     }
     tasks.append(task)
 
@@ -28,9 +37,12 @@ if user_input.lower() in ['yes', 'y']:
             print("Invalid input. Please enter a valid number.")
 
     for i in range(numberOfInputs):
+        user_name=input("Enter your name : ")
         task_name = input(f"Enter task #{i+1} name: ")
+        duration = input(f"Enter task #{i+1} duration in hours: ")
+        deadline = input(f"Enter task #{i+1} deadline in YYYY-MM-DD format:")
         serial_no = i + 1
-        add_task(task_name, serial_no)
+        add_task(serial_no,user_name,task_name, duration,deadline)
 else:
     print("No tasks added. Thank you!")
 
@@ -117,7 +129,29 @@ if user_input2.lower() in ['yes','y']:
 
     elif user_input3.lower() in ['view','v']:
         view(tasks)
-        
+
 print("Final tasks : ")
 for t in tasks:
     print(f"#{t['serial_no']} | Time: {t['time']} | Task: {t['task']}")
+
+
+llm=HuggingFaceEndpoint(
+    repo_id = "meta-llama/Meta-Llama-3-8B-Instruct",
+    task="Text Generation"
+)
+
+model=ChatHuggingFace(llm=llm)
+
+
+template=ChatPromptTemplate.from_messages([
+    ('system', 'Based on time first you respect that user , You are a polite and helpful AI assistant. Organize the following tasks for the user based on urgency and deadline. Output them as a numbered list. only showing today tasks not much more content required to show there '),
+    ('human','tasks : {task}')
+    
+])
+
+def organize_tasks_with_llm(task_string):
+    prompt = template.format_messages(task=task_string)
+    response = model.invoke(prompt)
+    return response.content
+
+print(f"Your organize tasks are : {organize_tasks_with_llm(tasks)}")
